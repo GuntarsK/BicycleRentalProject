@@ -6,12 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -30,6 +28,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
         Parent userRegistrationForm = FXMLLoader.load(getClass().getResource("/user_registration.fxml"));
+
         Scene userRegistrationFormScene = new Scene(userRegistrationForm, 300, 275);
         Scene rootFormScene = new Scene(root, 300, 275);
 
@@ -48,11 +47,12 @@ public class Main extends Application {
                 .get();
 
         VBox vBoxRoot = root.getChildrenUnmodifiable().stream()
-                .filter(t -> "textControlls".equals(t.getId()))
+                .filter(t -> "textControls".equals(t.getId()))
                 .map(t-> (VBox) t)
                 .findAny()
                 .get();
 
+        /** Add user button */
         btn.setOnAction(t -> {
             System.out.println("user insert in progress");
             UserService userService = new UserService();
@@ -82,6 +82,38 @@ public class Main extends Application {
             primaryStage.setScene(rootFormScene);
         });
 
+        /** Return back button */
+        Button returnBackBtn = root.getChildrenUnmodifiable().stream()
+                .filter(t -> "textControls".equals(t.getId()))
+                .map(t -> (VBox) t)
+                .findAny().get().getChildrenUnmodifiable()
+                .stream()
+                .filter(t -> "returnBackBtn".equals(t.getId()))
+                .map(t -> (Button) t).findAny().get();
+
+        returnBackBtn.setOnAction(e -> {
+            primaryStage.setScene(userRegistrationFormScene);
+        });
+
+        /** Clear form button */
+        Button clearFormBtn = userRegistrationForm.getChildrenUnmodifiable().stream()
+                .filter(t -> "addUserControls".equals(t.getId()))
+                .map(t -> (VBox) t)
+                .findAny().get().getChildrenUnmodifiable()
+                .stream()
+                .filter(t -> "clearFormBtn".equals(t.getId()))
+                .map(t -> (Button) t).findAny().get();
+
+        clearFormBtn.setOnAction(e -> {
+            System.out.println("Cleaning up user registration form");
+            getTextFieldsToDeleteText(vBox, "user_name").setText("");
+            getTextFieldsToDeleteText(vBox, "first_name").setText("");
+            getTextFieldsToDeleteText(vBox, "last_name").setText("");
+            getTextFieldsToDeleteText(vBox, "address").setText("");
+            getTextFieldsToDeleteText(vBox, "email").setText("");
+            getDateFieldToDeleteText(vBox, "birth_date").getEditor().clear();
+        });
+
         primaryStage.setScene(userRegistrationFormScene);
         primaryStage.show();
     }
@@ -108,6 +140,16 @@ public class Main extends Application {
                 .map(t -> (HBox) t)
                 .flatMap(t -> t.getChildren().stream())
                 .filter(t -> id.equals(t.getId()));
+    }
+
+    private TextField getTextFieldsToDeleteText(VBox vBox, String id) {
+        return getNodeStream(vBox, id)
+                .map(t -> (TextField) t).findFirst().get();
+    }
+
+    private DatePicker getDateFieldToDeleteText(VBox vBox, String id) {
+        return getNodeStream(vBox, id)
+                .map(t -> (DatePicker) t).findFirst().get();
     }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {

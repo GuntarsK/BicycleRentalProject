@@ -10,22 +10,23 @@ public class UserService {
     private final UserRepository userRepository = new UserRepository();
 
 
+    // return String, because we want to show some feedback message
     public String addUser(String userName, String firstname,
                           String lastname, String email,
-                          Date birth, String addrres) {
+                          Date birth, String address) {
 
         //user validator
         if (StringUtils.isNullOrEmpty(userName)
                 || StringUtils.isNullOrEmpty(firstname)
                 || StringUtils.isNullOrEmpty(lastname)
-                || StringUtils.isNullOrEmpty(addrres)
+                || StringUtils.isNullOrEmpty(address)
                 || birth == null) {
-            return "WRONG DATA, Correct input";
+            return "Input error. Complete all fields";
         }
 
-        //UserFactory :: Factory pattern
+        //UserFactory :: Factory pattern - that would be a better approach
         User user = new User();
-        user.setAddress(addrres);
+        user.setAddress(address);
         user.setDateOfBirth(birth);
         user.setEmail(email);
         user.setFirstname(firstname);

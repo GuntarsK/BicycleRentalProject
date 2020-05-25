@@ -7,10 +7,8 @@ import org.hibernate.Transaction;
 
 public class UserRepository {
     public User saveUser(User user){
-        Session session = HibernateUtil.getSessionFactory()
-                .getCurrentSession();
-        Transaction trn = HibernateUtil.getSessionFactory()
-                .getCurrentSession().beginTransaction();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction trn = HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
         long id = (long) session.save(user);
         user.setId(id);
         trn.commit();
